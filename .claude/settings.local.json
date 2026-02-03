@@ -1,0 +1,9 @@
+{
+  "permissions": {
+    "allow": [
+      "Bash(php -v:*)",
+      "Bash(composer --version:*)",
+      "Bash(curl -sL \"https://raw.githubusercontent.com/erusev/parsedown-extra/0.8.x/ParsedownExtra.php\" -o /home/tom/.traefik-router/prod/www/volumes/www/t71.ch/public/markdown/lib/ParsedownExtra.php)"
+    ]
+  }
+}

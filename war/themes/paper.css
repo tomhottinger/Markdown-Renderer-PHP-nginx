@@ -1,0 +1,93 @@
+/* Papier & Handschrift - wie ein beschriebenes Notizbuch */
+@import url('https://fonts.googleapis.com/css2?family=Caveat:wght@400;600;700&family=Patrick+Hand&display=swap');
+
+:root {
+    --bg: #f4efe1;
+    --fg: #2c2416;
+    --fg-muted: #7a6e5d;
+    --border: #d4c9b0;
+    --border-light: #e2d9c5;
+    --bg-code: #ece6d4;
+    --bg-blockquote: #ece6d4;
+    --accent: #8b4513;
+    --accent-hover: #a0522d;
+}
+
+body {
+    font-family: 'Patrick Hand', 'Caveat', cursive !important;
+    font-size: 19px !important;
+    line-height: 1.8 !important;
+    background:
+        repeating-linear-gradient(
+            transparent,
+            transparent 31px,
+            #d4c9b0 31px,
+            #d4c9b0 32px
+        ),
+        #f4efe1 !important;
+    background-attachment: local !important;
+}
+
+.container { max-width: 750px; }
+
+.content h1, .content h2, .content h3, .content h4, .content h5, .content h6 {
+    font-family: 'Caveat', cursive;
+}
+
+.content h1 {
+    font-size: 2.8rem;
+    border-bottom: 2px solid #8b4513;
+    color: #8b4513;
+}
+.content h2 {
+    font-size: 2.2rem;
+    border-bottom: 1px dashed #8b4513;
+    color: #5c3010;
+}
+.content h3 { font-size: 1.8rem; color: #5c3010; }
+
+.content a { color: #8b4513; text-decoration: underline wavy #d4a574; }
+.content a:hover { color: #a0522d; }
+
+.content blockquote {
+    border-left: 3px solid #8b4513;
+    background: rgba(139, 69, 19, 0.05);
+    border-radius: 0;
+    font-style: italic;
+}
+
+.content pre {
+    font-family: 'Courier New', monospace !important;
+    background: #ece6d4;
+    border: 1px dashed #d4c9b0;
+    border-radius: 2px;
+}
+
+.content code {
+    font-family: 'Courier New', monospace !important;
+    background: #ece6d4;
+    border-radius: 2px;
+    color: #5c3010;
+}
+
+.content table { border: 1px solid #d4c9b0; }
+.content th {
+    background: #e2d9c5;
+    font-family: 'Caveat', cursive;
+    font-size: 1.1em;
+}
+
+.content img { border-radius: 2px; border: 2px solid #d4c9b0; }
+.content hr { border-top: 1px dashed #8b4513; }
+
+.meta {
+    font-family: 'Caveat', cursive;
+    font-size: 1rem;
+    border-bottom: 1px dashed #d4c9b0;
+}
+
+.toc {
+    background: #ece6d4;
+    border: 1px dashed #d4c9b0;
+    border-radius: 2px;
+}

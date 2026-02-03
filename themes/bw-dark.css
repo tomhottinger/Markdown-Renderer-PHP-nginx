@@ -1,0 +1,22 @@
+/* Weiss auf Schwarz - minimalistisch, hoher Kontrast */
+:root {
+    --bg: #000000;
+    --fg: #ffffff;
+    --fg-muted: #aaaaaa;
+    --border: #ffffff;
+    --border-light: #333333;
+    --bg-code: #111111;
+    --bg-blockquote: #0a0a0a;
+    --accent: #ffffff;
+    --accent-hover: #cccccc;
+}
+
+.content a { text-decoration: underline; }
+.content h1 { border-bottom: 2px solid #fff; }
+.content h2 { border-bottom: 1px solid #fff; }
+.content pre { border: 1px solid #fff; border-radius: 0; }
+.content code { border-radius: 0; }
+.content blockquote { border-left: 3px solid #fff; border-radius: 0; background: none; color: #ccc; }
+.content table th { background: #fff; color: #000; }
+.content tr:nth-child(even) { background: #111; }
+.content img { border-radius: 0; border: 1px solid #fff; }
