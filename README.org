@@ -202,12 +202,60 @@ return [
 - =safe_mode= escapes all HTML in Markdown (for untrusted content)
 - =config.php= should be blocked via web server config
 
-** Credits
+** Third-Party Components
 
-- [[https://github.com/erusev/parsedown][Parsedown]] by Emanuil Rusev
-- [[https://github.com/erusev/parsedown-extra][ParsedownExtra]] by Emanuil Rusev
-- [[https://highlightjs.org/][highlight.js]] for syntax highlighting
-- Solarized color scheme by [[https://ethanschoonover.com/solarized/][Ethan Schoonover]]
+This project builds on the following excellent open-source libraries.
+Their source code is included in =lib/= with minimal modifications
+for PHP 8.x compatibility (null-safety checks in methods where parent
+calls may return =null=). The original code and copyright remain intact.
+
+*** Parsedown 1.7.4
+
+- Author: Emanuil Rusev
+- Repository: [[https://github.com/erusev/parsedown]]
+- License: [[https://github.com/erusev/parsedown/blob/master/LICENSE.txt][MIT License]]
+- Description: A fast, consistent Markdown parser for PHP. Supports GitHub
+  Flavored Markdown including tables, fenced code blocks, strikethrough,
+  and URL autolinking. Single-file, no dependencies.
+- Modifications: None.
+
+*** ParsedownExtra 0.7.0
+
+- Author: Emanuil Rusev
+- Repository: [[https://github.com/erusev/parsedown-extra]]
+- License: [[https://github.com/erusev/parsedown-extra/blob/master/LICENSE.txt][MIT License]]
+- Description: An extension for Parsedown that adds support for Markdown Extra
+  features: footnotes, abbreviations, definition lists, and special attributes
+  (={.class #id}=).
+- Modifications: Three null-safety checks added for PHP 8.x compatibility in
+  =blockHeader()=, =blockSetextHeader()=, and =inlineLink()=, where the parent
+  method may return =null=. The original code passes =null= into array access
+  and =preg_match()=, which triggers warnings/deprecation notices on PHP 8.x.
+
+*** highlight.js
+
+- Author: Ivan Sagalaev and contributors
+- Website: [[https://highlightjs.org/]]
+- Repository: [[https://github.com/highlightjs/highlight.js]]
+- License: [[https://github.com/highlightjs/highlight.js/blob/main/LICENSE][BSD 3-Clause License]]
+- Description: Syntax highlighting for the web. Loaded from cdnjs CDN at
+  runtime -- no files included in this repository.
+- Modifications: None (loaded from CDN).
+
+*** Solarized Color Scheme
+
+- Author: Ethan Schoonover
+- Website: [[https://ethanschoonover.com/solarized/]]
+- License: [[https://github.com/altercation/solarized/blob/master/LICENSE][MIT License]]
+- Description: A precision color scheme for machines and people. Used as the
+  basis for the =solarized-light= and =solarized-dark= CSS themes.
+
+*** Google Fonts (Paper Theme)
+
+- Fonts used: [[https://fonts.google.com/specimen/Caveat][Caveat]] by Impallari Type,
+  [[https://fonts.google.com/specimen/Patrick+Hand][Patrick Hand]] by Patrick Wagesreiter
+- License: [[https://scripts.sil.org/OFL][SIL Open Font License 1.1]]
+- Loaded from Google Fonts CDN at runtime, only when the =paper= theme is active.
 
 ** License
 
