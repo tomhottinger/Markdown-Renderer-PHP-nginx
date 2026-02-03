@@ -1,0 +1,234 @@
+#+TITLE: PHP Markdown Renderer
+#+AUTHOR: Tom
+#+DATE: 2026-02-03
+
+* PHP Markdown Renderer
+
+A single-file PHP script that renders Markdown files as beautifully styled HTML.
+No framework, no Composer, no build step. Just drop it in and go.
+
+** Features
+
+- GitHub Flavored Markdown (tables, fenced code, strikethrough, autolinks)
+- Optional ParsedownExtra support (footnotes, definition lists, abbreviations)
+- Syntax highlighting via highlight.js (CDN, zero config)
+- Light / Dark / Auto theme with =prefers-color-scheme= support
+- Custom CSS themes via URL parameter or config
+- Table of Contents generation
+- Relative =.md= links are automatically rewritten and carry over URL parameters
+- Two operation modes: standalone (=?file==) and Nginx proxy
+- Responsive, mobile-friendly, print-ready
+- Raw Markdown source view (=?raw=1=)
+- Security: path traversal protection, directory restrictions, file blocking
+
+** Requirements
+
+- PHP 8.0+
+- Parsedown 1.7.x (included in =lib/=)
+- ParsedownExtra 0.7.x (included in =lib/=, optional)
+
+** Installation
+
+#+begin_src bash
+git clone https://github.com/YOUR_USER/php-markdown-renderer.git markdown
+#+end_src
+
+That's it. The repository includes Parsedown and ParsedownExtra in =lib/=.
+
+** File Structure
+
+#+begin_example
+markdown/
+  render.php            Main renderer script
+  config.php            Configuration (all options)
+  lib/
+    Parsedown.php       Parsedown 1.7.4
+    ParsedownExtra.php  ParsedownExtra 0.7.0
+  themes/
+    bw-light.css        Black on white, high contrast
+    bw-dark.css         White on black, high contrast
+    solarized-light.css Ethan Schoonover's Solarized Light
+    solarized-dark.css  Ethan Schoonover's Solarized Dark
+    paper.css           Paper texture with handwriting fonts
+  data/                 Your Markdown files go here
+#+end_example
+
+** Operation Modes
+
+*** Mode 1: Standalone (=?file== parameter)
+
+Call =render.php= directly with a =file= parameter. The path is relative to the
+configured =doc_root= (defaults to the script directory).
+
+#+begin_example
+https://example.com/markdown/render.php?file=docs/readme.md
+https://example.com/markdown/render.php?file=notes/todo.md&theme=paper
+#+end_example
+
+*** Mode 2: Nginx Proxy
+
+Nginx intercepts all =.md= file requests and routes them through =render.php=.
+Markdown files are served as rendered HTML transparently.
+
+#+begin_example
+https://example.com/docs/readme.md
+https://example.com/docs/readme.md?theme=solarized-dark&toc=1
+https://example.com/docs/readme.md?raw=1
+#+end_example
+
+**** Nginx Configuration
+
+Add this =location= block to your server configuration, *before* the
+=location /= block:
+
+#+begin_src nginx
+# Markdown files rendered via PHP
+location ~ \.md$ {
+    include fastcgi_params;
+    fastcgi_pass 127.0.0.1:9000;       # or your PHP-FPM socket
+    fastcgi_param SCRIPT_FILENAME /path/to/markdown/render.php;
+    fastcgi_param MARKDOWN_FILE $document_root$uri;
+}
+#+end_src
+
+*Important:* =include fastcgi_params= must come *before* =fastcgi_param
+SCRIPT_FILENAME= so that the custom value is not overridden by the defaults.
+
+After changing the config, reload Nginx:
+
+#+begin_src bash
+nginx -t && nginx -s reload
+# or in Docker:
+docker compose restart php-webserver
+#+end_src
+
+** URL Parameters
+
+All parameters work in both operation modes.
+
+| Parameter                | Values                           | Default        | Description                    |
+|--------------------------+----------------------------------+----------------+--------------------------------|
+| =theme=                  | =light=, =dark=, =auto=         | =auto=         | Built-in color scheme          |
+| =theme=                  | =paper=, =solarized-dark=, ...  | --             | Name of a CSS file in =themes/= |
+| =toc=                    | =1= / =0=                       | =0=            | Show table of contents         |
+| =max_width=              | CSS value                        | =860px=        | Content area max width         |
+| =highlight_code=         | =1= / =0=                       | =1=            | Enable syntax highlighting     |
+| =highlight_theme_light=  | highlight.js theme name          | =github=       | Code theme for light mode      |
+| =highlight_theme_dark=   | highlight.js theme name          | =github-dark=  | Code theme for dark mode       |
+| =custom_css=             | URL path to CSS file             | --             | Load additional CSS            |
+| =raw=                    | =1=                              | --             | Serve raw Markdown as text     |
+
+*** Examples
+
+#+begin_example
+# Dark mode with table of contents
+?theme=dark&toc=1
+
+# Paper theme (handwriting fonts, lined background)
+?theme=paper
+
+# Solarized dark with wider layout
+?theme=solarized-dark&max_width=1100px
+
+# Custom CSS file
+?custom_css=/assets/my-style.css
+
+# View raw Markdown source
+?raw=1
+#+end_example
+
+** Included Themes
+
+| Name               | Description                                                          |
+|--------------------+----------------------------------------------------------------------|
+| =bw-light=         | Black on white, sharp contrast, no rounded corners                   |
+| =bw-dark=          | White on black, sharp contrast, no rounded corners                   |
+| =solarized-light=  | Warm light theme based on Solarized by Ethan Schoonover              |
+| =solarized-dark=   | Cool dark theme based on Solarized                                   |
+| =paper=            | Lined paper background, handwriting fonts (Caveat, Patrick Hand)     |
+
+** Creating Custom Themes
+
+Create a CSS file in =themes/= and override the CSS variables:
+
+#+begin_src css
+/* themes/my-theme.css */
+:root {
+    --bg: #fefefe;           /* Page background */
+    --fg: #333333;           /* Text color */
+    --fg-muted: #888888;     /* Secondary text */
+    --border: #dddddd;       /* Border color */
+    --border-light: #eeeeee; /* Light border */
+    --bg-code: #f5f5f5;      /* Code background */
+    --bg-blockquote: #f9f9f9;/* Blockquote background */
+    --accent: #0066cc;       /* Links, accents */
+    --accent-hover: #004499; /* Link hover */
+}
+#+end_src
+
+Then use it: =?theme=my-theme=
+
+You can also override any CSS class: =.content h1=, =.content pre=,
+=.content blockquote=, =.meta=, =.toc=, etc.
+
+** Configuration
+
+All options are set in =config.php=. Every option has a sensible default,
+so the file is optional. See =config.php= for inline documentation.
+
+*** Key Options
+
+#+begin_src php
+return [
+    'doc_root'     => __DIR__,          // Base directory for ?file= paths
+    'parser'       => 'parsedown-extra', // 'parsedown' or 'parsedown-extra'
+    'breaks'       => true,             // Newline = <br> (GFM style)
+    'safe_mode'    => false,            // Escape all HTML
+    'theme'        => 'auto',           // 'light', 'dark', 'auto', or theme name
+    'max_width'    => '860px',
+    'toc'          => false,
+    'show_meta'    => true,             // Show last-modified date
+    'allowed_dirs' => [],               // Restrict to specific directories
+    'blocked_files'=> [],               // Block specific filenames
+];
+#+end_src
+
+** Security
+
+- Only =.md= files can be rendered (extension check)
+- Path traversal (=..=, null bytes) is stripped
+- =allowed_dirs= restricts access to specific directories
+- =blocked_files= blocks specific filenames
+- =safe_mode= escapes all HTML in Markdown (for untrusted content)
+- =config.php= should be blocked via web server config
+
+** Credits
+
+- [[https://github.com/erusev/parsedown][Parsedown]] by Emanuil Rusev
+- [[https://github.com/erusev/parsedown-extra][ParsedownExtra]] by Emanuil Rusev
+- [[https://highlightjs.org/][highlight.js]] for syntax highlighting
+- Solarized color scheme by [[https://ethanschoonover.com/solarized/][Ethan Schoonover]]
+
+** License
+
+MIT License
+
+Copyright (c) 2026 Tom
+
+Permission is hereby granted, free of charge, to any person obtaining a copy
+of this software and associated documentation files (the "Software"), to deal
+in the Software without restriction, including without limitation the rights
+to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
+copies of the Software, and to permit persons to whom the Software is
+furnished to do so, subject to the following conditions:
+
+The above copyright notice and this permission notice shall be included in all
+copies or substantial portions of the Software.
+
+THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
+IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
+FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
+AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
+LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
+OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
+SOFTWARE.
